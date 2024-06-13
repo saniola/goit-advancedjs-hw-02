@@ -2,6 +2,7 @@ import iziToast from "izitoast";
 import "izitoast/dist/css/iziToast.min.css";
 
 const form = document.querySelector('.form');
+const createButton = form.querySelector('button[type="submit"]');
 
 form.addEventListener('submit', event => {
   event.preventDefault();
@@ -10,9 +11,13 @@ form.addEventListener('submit', event => {
   const step = Number(form.elements.step.value);
   const amount = Number(form.elements.amount.value);
 
+  createButton.disabled = true;
+
+  const promises = [];
+
   for (let i = 0; i < amount; i++) {
     const currentDelay = delay + i * step;
-    createPromise(i + 1, currentDelay)
+    const promise = createPromise(i + 1, currentDelay)
       .then(({ position, delay }) => {
         iziToast.success({
           title: 'Success',
@@ -27,7 +32,15 @@ form.addEventListener('submit', event => {
           position: 'topRight',
         });
       });
+
+    promises.push(promise);
   }
+
+  Promise.allSettled(promises).then(() => {
+    form.reset();
+
+    createButton.disabled = false;
+  });
 });
 
 function createPromise(position, delay) {

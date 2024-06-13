@@ -21,25 +21,26 @@ const options = {
   onClose(selectedDates) {
     selectedDate = selectedDates[0];
 
-    if (selectedDate <= new Date()) {
+    if (selectedDate > new Date()) {
+      startBtn.disabled = false;
+    } else {
       iziToast.error({
         title: 'Error',
         message: 'Please choose a date in the future',
         position: 'topRight',
       });
-
       startBtn.disabled = true;
-    } else {
-      startBtn.disabled = false;
     }
   },
 };
 
 flatpickr(dateTimePicker, options);
 
+startBtn.disabled = true;
+
 startBtn.addEventListener('click', () => {
   startBtn.disabled = true;
-  dateTimePicker.disabled = false;
+  dateTimePicker.disabled = true;
 
   const endDate = selectedDate;
 
@@ -54,7 +55,8 @@ startBtn.addEventListener('click', () => {
     if (timeRemaining <= 0) {
       clearInterval(countdownInterval);
       updateTimerDisplay(0, 0, 0, 0);
-      startBtn.disabled = false;
+      dateTimePicker.disabled = false;
+      startBtn.disabled = true;
       return;
     }
 
@@ -92,6 +94,12 @@ dateTimePicker.addEventListener('change', () => {
   if (countdownInterval) {
     clearInterval(countdownInterval);
     updateTimerDisplay(0, 0, 0, 0);
+  }
+
+  if (selectedDate > new Date()) {
+    startBtn.disabled = false;
+  } else {
+    startBtn.disabled = true;
   }
 });
 
